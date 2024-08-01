@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,27 +23,30 @@ public class TarefaController {
 
     @GetMapping
     @Operation(summary = "Lista todas as tarefas", description = "Lista todas as tarefas cadastradas no banco de dados")
-    public ResponseEntity<List<TarefaResponseDTO>> findAll(){
+    public ResponseEntity<List<TarefaResponseDTO>> findAll() {
         return ResponseEntity.ok().body(service.findAll());
     }
 
     @PostMapping
     @Operation(summary = "Cria uma nova tarefa", description = "Cria uma nova tarefa com as informações passadas no corpo da requisição, onde o Status pode ser 'PENDENTE', 'CONCLUIDO' ou 'CANCELADO'")
-    public ResponseEntity<TarefaResponseDTO> create(@RequestBody TarefaRequestDTO tarefaRequestDto){
+    public ResponseEntity<TarefaResponseDTO> create(@RequestBody TarefaRequestDTO tarefaRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(tarefaRequestDto));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza uma tarefa", description = "Atualiza uma tarefa com as informações passadas no corpo da requisição, onde o Status pode ser 'PENDENTE', 'CONCLUIDO' ou 'CANCELADO'")
-    public ResponseEntity<TarefaResponseDTO> update(@RequestBody TarefaRequestDTO tarefaRequestDto, @PathVariable Long id){
+    public ResponseEntity<TarefaResponseDTO> update(@RequestBody TarefaRequestDTO tarefaRequestDto,
+            @PathVariable Long id) {
         return ResponseEntity.ok().body(service.update(tarefaRequestDto, id));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta uma tarefa", description = "Deleta uma tarefa com base no ID passado na URL")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Map<String, String>> delete(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.ok().build();
+        Map<String, String> response = new HashMap<>();
+        response.put("mensagem", "Tarefa deletada com sucesso");
+        return ResponseEntity.ok().body(response);
     }
 
 }

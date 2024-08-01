@@ -20,15 +20,11 @@ Este projeto tem como objetivo desenvolver uma API RESTful para gerenciamento de
 - Login de Usuário: Endpoint para autenticar um usuário e gerar um token JWT.
 - Proteção de Rotas: Garantir que apenas usuários autenticados possam acessar os endpoints de tarefas.
 
-## Como Instalar e Usar a API
+## Como instalar e usar 
 
-- Pode ser acessada pelo link do deploy:
+* Caso não queire testar localmente, Pode ser acessada via deploy atráves do link: (`https://trilhabackendjr.onrender.com/`)
 
-```bash
-https://trilhabackendjr.onrender.com/
-```
-
-- 1 Clone o repositório
+* 1 Clone o repositório
 ```bash
 git clone git@github.com:matheusgmello/TrilhaBackEndJR-JUN15.git
 ```
@@ -44,30 +40,44 @@ mvn spring-boot:run
 ```bash
 http://localhost:8080
 ```
+- 5 Teste a API no Postman
 
 ### Rotas 
 
 - Acesse a documentação dos Endpoints através do Swagger
 
-   * Localmente `http://localhost:8080/swagger-ui/index.html#/`
    * Deploy `https://trilhabackendjr.onrender.com/swagger-ui/index.html#/`
+   * Localmente `http://localhost:8080/swagger-ui/index.html#/`
+  
 
 ```markdown
 
 ### Rotas de Autenticacao
 
-POST /usuario/register - Registra um novo usuário
+POST /usuario/register - Registra usuário
 
 {
-  "usuario": "string",
-  "senha": "string"
+  "usuario": "Matheus",
+  "senha": "123456"
+}
+
+Response Body
+
+{
+  "message": "Usuário criado com sucesso"
 }
 
 POST /usuario/login - Realiza o Login do usuário, gerando um token de acesso
 
 {
-  "usuario": "string",
-  "senha": "string"
+  "usuario": "Matheus",
+  "senha": "123456"
+}
+
+Response Body
+
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9."
 }
 
 ### Rotas do usuário
@@ -76,38 +86,90 @@ POST /usuario/login - Realiza o Login do usuário, gerando um token de acesso
 
 GET /usuario - Lista todos usuários registrados
 
+Response Body
+
+[
+  {
+    "id": 1,
+    "usuario": "Matheus",
+    "senha": "$2a$10$qXUsMSpZgI6RptKYq3mJRuZ.ATgq4hnkGSpLiZbOP3cc9B9KDqBAW"
+  }
+]
+
 PUT /usuario/{ID} - Atualiza o usuário com o ID fornecido
 
 {
-  "usuario": "string",
-  "senha": "string"
+  "usuario": "Adonaldo Cleber",
+  "senha": "123456"
+}
+
+Response Body
+
+{
+  "id": 1,
+  "usuario": "Adonaldo Cleber",
+  "senha": "$2a$10$mymTZ5jkLN3gytEBPUrYHeN//9kJSZFqf7nHygp9GCtU/VQzcMOh2"
 }
 
 DELETE /usuario/{ID} - Deleta o usuário com o ID fornecido
 
-### Rotas de Tarefas
-
-**Necessita estar autenticado**
-
-POST /tarefa - Registra uma nova tarefa
+Response Body
 
 {
-  "tarefaId": 0,
-  "descricao": "string",
+  "message": Usuário deletado com sucesso.
+}
+
+### Rotas de Tarefas
+
+**É necessário estar autenticado para utilizar está rota**
+
+POST /tarefa - Cria uma nova tarefa
+
+**Status da tarefa pode ser PENDENTE', 'CONCLUIDO' ou 'CANCELADO'**
+
+{
+  "descricao": "Ir ao mercado comprar pão e leite",
   "status": "PENDENTE"
 }
 
 GET /tarefa - Lista todas as tarefas registradas
 
+Response Body
+
+[
+  {
+    "id": 1,
+    "descricao": "Ir ao mercado comprar pão e leite",
+    "status": "PENDENTE",
+    "dataCriacao": "2024-08-01 12:51:31",
+    "dataAtualizacao": "2024-08-01 12:51:42"
+  }
+]
+
 PUT /tarefa/{ID} - Altera a tarefa com o ID fornecido
 
 {
-  "tarefaId": 2,
-  "descricao": "string",
-  "status": "PENDENTE"
+  "descricao": "Ir ao mercado comprar pão e leite e banana",
+  "status": "CONCLUIDO",
+}
+
+Response Body
+
+{
+  "id": 1,
+  "descricao": "Ir ao mercado comprar pão e leite e banana",
+  "status": "PENDENTE",
+  "dataCriacao": "2024-08-01 12:51:31",
+  "dataAtualizacao": "2024-08-01 12:51:42"
 }
 
 DELETE /tarefa/{ID} - Deleta a tarefa com o ID fornecido
+
+Response Body
+
+{
+  "mensagem": "Tarefa deletada com sucesso"
+}
 
 ```
 ## Conecte-se comigo

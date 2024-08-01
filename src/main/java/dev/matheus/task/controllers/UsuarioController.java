@@ -14,27 +14,28 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Usuários", description = "Rotas dos Usuários") 
+@Tag(name = "Usuários", description = "Rotas dos Usuários")
 @RequestMapping("/usuario")
 public class UsuarioController {
     private final UsuarioService service;
 
     @GetMapping
     @Operation(summary = "Lista todos os usuários", description = "Lista todos os usuários cadastrados no banco de dados")
-    public ResponseEntity<List<UsuarioResponseDTO>> findAll(){
+    public ResponseEntity<List<UsuarioResponseDTO>> findAll() {
         return ResponseEntity.ok().body(service.findAll());
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Deleta um usuário", description = "Deleta um usuário de acordo com o ID informado")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Usuário deletado com sucesso");
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza um usuário", description = "Atualiza um usuário de acordo com o ID informado")
-    public ResponseEntity<UsuarioResponseDTO> update(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuarioRequestDTO){
+    public ResponseEntity<UsuarioResponseDTO> update(@PathVariable Long id,
+            @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
         return ResponseEntity.ok().body(service.update(id, usuarioRequestDTO));
     }
 }
