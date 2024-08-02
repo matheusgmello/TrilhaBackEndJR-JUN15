@@ -29,14 +29,24 @@ public class TarefaService {
     // Servico para criar uma nova tarefa
 
     public TarefaResponseDTO create(TarefaRequestDTO tarefaRequestDto) {
+        // Verificar se a descrição está presente e não é vazia
+        if (tarefaRequestDto.descricao() == null || tarefaRequestDto.descricao().trim().isEmpty()) {
+            throw new IllegalArgumentException("A descrição da tarefa é obrigatória e não pode estar vazia.");
+        }
+    
+        // Verificar se o status está presente e é válido
+        if (tarefaRequestDto.status() == null) {
+            throw new IllegalArgumentException("O status da tarefa é obrigatório, e deve ser 'PENDENTE' ou 'CONCLUIDO' ou 'CANCELADO'.");
+        }
+    
         Tarefa tarefa = new Tarefa();
         tarefa.setDescricao(tarefaRequestDto.descricao());
         tarefa.setStatus(tarefaRequestDto.status());
         tarefa.setDataCriacao(LocalDateTime.now());
         tarefa.setDataAtualizacao(LocalDateTime.now());
-
+    
         log.info("Criando nova tarefa com descrição: " + tarefa.getDescricao());
-
+    
         return this.toDto(repository.save(tarefa));
     }
 
