@@ -25,13 +25,21 @@ public class UsuarioService {
     }
 
     public void delete(Long id) {
+        if (id == 0) {
+            throw new IllegalArgumentException("Tente novamente com outro ID, não é permitido ID 0");
+        }
         validaDelete(id);
         log.info("Deletando usuário com ID: " + id);
         repository.deleteById(id);
     }
 
     public UsuarioResponseDTO update(Long id, UsuarioRequestDTO userRequest) {
-        validaUsuario(userRequest);
+        if (id == 0) {
+            throw new IllegalArgumentException("Não é permitido ID 0, tente novamente com outro ID");
+        }
+
+        // Passa o ID junto com o objeto de requisição para validação
+        validaUsuario(id, userRequest);
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(userRequest.senha());
 
@@ -45,11 +53,19 @@ public class UsuarioService {
         return this.toDto(usuario);
     }
 
-    private void validaUsuario(UsuarioRequestDTO objDTO) {
-        Usuario obj = repository.findByUsuario(objDTO.usuario());
-
-        if (obj != null) {
-            throw new DataIntegrityViolationException("Usuário já cadastrado no sistema!");
+    private void validaUsuario(Long id, UsuarioRequestDTO objDTO) {
+        Usuario existingUser = repository.findByUsuario(objDTO.usuario());
+    
+        if (existingUser != null) {
+            log.info("Usuário encontrado: ID existente = " + existingUser.getIdUsuario() + ", ID atualização = " + id);
+            if (!existingUser.getIdUsuario().equals(id)) {
+                log.info("ID do usuário encontrado é diferente do ID de atualização. Lançando exceção.");
+                throw new DataIntegrityViolationException("Usuário já cadastrado no sistema!");
+            } else {
+                log.info("ID do usuário encontrado é o mesmo do ID de atualização. Permitir atualização.");
+            }
+        } else {
+            log.info("Nenhum usuário encontrado com o nome: " + objDTO.usuario());
         }
     }
 
@@ -58,7 +74,7 @@ public class UsuarioService {
         if (usuario.isPresent() && usuario.get().getUsuario().equalsIgnoreCase("admin")) {
             throw new DataIntegrityViolationException("Usuário com a permissão admin não pode ser deletado");
         } else if (usuario.isEmpty()) {
-            throw new RecordNotFoundException("Nenhum usuário com este ID");
+            throw new RecordNotFoundException("Nenhum usuário encontrado com o ID: " + id);
         }
     }
 
