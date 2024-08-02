@@ -22,13 +22,13 @@ public class TarefaService {
 
     private static final String NENHUMA_TAREFA = "Nenhuma tarefa encontrada com ID: ";
 
-    public List<TarefaResponseDTO> findAll(){
+    public List<TarefaResponseDTO> findAll() {
         return repository.findAll().stream().map(this::toDto).toList();
     }
 
     // Servico para criar uma nova tarefa
 
-    public TarefaResponseDTO create(TarefaRequestDTO tarefaRequestDto){
+    public TarefaResponseDTO create(TarefaRequestDTO tarefaRequestDto) {
         Tarefa tarefa = new Tarefa();
         tarefa.setDescricao(tarefaRequestDto.descricao());
         tarefa.setStatus(tarefaRequestDto.status());
@@ -42,7 +42,11 @@ public class TarefaService {
 
     // Servico para atualizar uma tarefa
 
-    public TarefaResponseDTO update(TarefaRequestDTO tarefaRequestDto, Long id){
+    public TarefaResponseDTO update(TarefaRequestDTO tarefaRequestDto, Long id) {
+        if (id == 0) {
+            throw new IllegalArgumentException("ID inválido: 0. Não é permitido atualizar uma tarefa com ID 0.");
+        }
+
         Tarefa tarefa = repository.findById(id).map(data -> {
             data.setDescricao(tarefaRequestDto.descricao());
             data.setStatus(tarefaRequestDto.status());
@@ -58,16 +62,23 @@ public class TarefaService {
     // Servico para deletar uma tarefa
 
     public void delete(Long id) {
+        if (id == 0) {
+            throw new IllegalArgumentException("ID inválido: 0. Não é permitido deletar uma tarefa com ID 0.");
+        }
+
         Optional<Tarefa> tarefa = repository.findById(id);
-        if (tarefa.isEmpty()) throw new RecordNotFoundException(NENHUMA_TAREFA + id);
+        if (tarefa.isEmpty()) {
+            throw new RecordNotFoundException(NENHUMA_TAREFA + id);
+        }
         log.info("Excluindo uma tarefa com ID: " + tarefa.get().getTarefaId());
         repository.deleteById(id);
     }
 
     // Metodo para converter uma entidade Tarefa em um DTO
 
-    private TarefaResponseDTO toDto(Tarefa tarefa){
-        return new TarefaResponseDTO(tarefa.getTarefaId(), tarefa.getDescricao(), tarefa.getStatus(), tarefa.getDataCriacao(), tarefa.getDataAtualizacao());
+    private TarefaResponseDTO toDto(Tarefa tarefa) {
+        return new TarefaResponseDTO(tarefa.getTarefaId(), tarefa.getDescricao(), tarefa.getStatus(),
+                tarefa.getDataCriacao(), tarefa.getDataAtualizacao());
     }
 
 }
